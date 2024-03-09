@@ -34,10 +34,10 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-private final PWMSparkMax leftfront = new PWMSparkMax(3); //Motor 4
-private final PWMSparkMax leftrear = new PWMSparkMax(2);  //Motor 3
-private final PWMSparkMax rightfront = new PWMSparkMax(1);//Motor 2
-private final PWMSparkMax rightrear = new PWMSparkMax(0); //Motor 1
+private final PWMSparkMax leftfront = new PWMSparkMax(3); //Motor 4 Left Front
+private final PWMSparkMax leftrear = new PWMSparkMax(2);  //Motor 3 Left Rear
+private final PWMSparkMax rightfront = new PWMSparkMax(1);//Motor 2 Right Front
+private final PWMSparkMax rightrear = new PWMSparkMax(0); //Motor 1 Right Rear
 
 
 
@@ -55,8 +55,8 @@ private final PWMSparkMax launchwheel = new PWMSparkMax(4);//Motor 5
 private final Timer timer1 = new Timer();
 private final Timer timer2 = new Timer();
 
-private final Joystick driver = new Joystick(1);
-private final XboxController operator = new XboxController(0);
+private final Joystick driver = new Joystick(0);
+private final XboxController operator = new XboxController(1);
 
 double drivelimit = 1;
 
@@ -83,12 +83,12 @@ double feedpower = 0;
     feedwheel.setInverted(true);
     launchwheel.setInverted(true);
 
-    leftfront.setInverted(true);
+    leftfront.setInverted(false);
     leftrear.setInverted(true);
-    rightfront.setInverted(true);
+    rightfront.setInverted(false);
     rightrear.setInverted(true);
 
-   leftrear.addFollower(leftfront);
+  leftrear.addFollower(leftfront);
    rightrear.addFollower(rightfront);
 
   }
@@ -129,7 +129,7 @@ double feedpower = 0;
         if (timer1.get() < 3){
           launchwheel.set(1);
         }
-
+/* 
         else if (timer1.get() < 5){
           launchwheel.set(1);
           feedwheel.set(1);
@@ -206,6 +206,7 @@ double feedpower = 0;
         }
         
         break;
+        */
     }
     }
    
@@ -218,7 +219,7 @@ double feedpower = 0;
   @Override
   public void teleopPeriodic() {
   
-
+/* 
     if (driver.getTriggerPressed() == true){
       drivelimit = 1;
     }
@@ -227,10 +228,12 @@ double feedpower = 0;
     if (driver.getTriggerReleased() == true){
       drivelimit = 0.5;
     }
-    
+   */
+
     //set joystic movement to driving wheels ant then apply scale factor "drivelimit"
     //getX() calls for the x-direction of the joystic
-    myDrive.arcadeDrive(-driver.getX()*drivelimit, -driver.getY()*drivelimit);
+    myDrive.arcadeDrive(driver.getX()*drivelimit, driver.getY()*drivelimit);
+    // myDrive.arcadeDrive(-driver.getX()*drivelimit, -driver.getY()*drivelimit); // Original
 
   
     if (operator.getAButton()){  //Feed
