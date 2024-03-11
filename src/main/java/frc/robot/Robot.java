@@ -139,11 +139,11 @@ double feedpower = 0;
         }
         break;
         case kJustDrive:
-         if (timer1.get() < 3.1){
+         if (timer1.get() < 3){
          myDrive.tankDrive(0.75, -0.75);
         }
 
-/* I am checking to see how the sync works ~coach Mills
+/*
         else if (timer1.get() < 5){
           launchwheel.set(1);
           feedwheel.set(1);
