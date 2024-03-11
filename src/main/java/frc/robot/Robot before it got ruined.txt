@@ -7,10 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+
 //Added imports below
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 //import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 //import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup; //terminating
 //import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -32,14 +31,13 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kSpeakermiddle = "Speaker Middle and Backup";
   private static final String kSpeakerLong = "Far Speaker Shot and Backup";
-  private static final String kJustDrive = "Just Drive";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-private final Spark leftfront = new Spark(3); //Motor 4 Left Front
-private final Spark leftrear = new Spark(2);  //Motor 3 Left Rear
-private final Spark rightfront = new Spark(1);//Motor 2 Right Front
-private final Spark rightrear = new Spark(0); //Motor 1 Right Rear
+private final PWMSparkMax leftfront = new PWMSparkMax(3); //Motor 4 Left Front
+private final PWMSparkMax leftrear = new PWMSparkMax(2);  //Motor 3 Left Rear
+private final PWMSparkMax rightfront = new PWMSparkMax(1);//Motor 2 Right Front
+private final PWMSparkMax rightrear = new PWMSparkMax(0); //Motor 1 Right Rear
 
 
 
@@ -47,12 +45,12 @@ private final Spark rightrear = new Spark(0); //Motor 1 Right Rear
 
 //public void addFollower​(PWMMotorController follower)
 
-private final MotorControllerGroup leftmotors = new MotorControllerGroup(leftfront, leftrear);
-private final MotorControllerGroup rightmotors = new MotorControllerGroup(rightfront, rightrear);
-private final DifferentialDrive myDrive = new DifferentialDrive(leftmotors,rightmotors);
+//private final MotorControllerGroup leftmotors = new MotorControllerGroup(leftfront, leftrear);
+//private final MotorControllerGroup rightmotors = new MotorControllerGroup(rightfront, rightrear);
+private final DifferentialDrive myDrive = new DifferentialDrive(leftfront,rightfront);
 
-private final Spark feedwheel = new Spark(5); //Motor 6
-private final Spark launchwheel = new Spark(4);//Motor 5
+private final PWMSparkMax feedwheel = new PWMSparkMax(5); //Motor 6
+private final PWMSparkMax launchwheel = new PWMSparkMax(4);//Motor 5
 
 private final Timer timer1 = new Timer();
 private final Timer timer2 = new Timer();
@@ -74,15 +72,14 @@ double feedpower = 0;
  
    @Override
   public void robotInit() {
-      timer1.reset();
-    timer1.start();
-    timer2.start();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("Speaker Middle and Backup", kSpeakermiddle);
-    m_chooser.addOption("Just Drive", kJustDrive);
     m_chooser.addOption("Far Speaker Shot and Backup", kSpeakerLong);
     SmartDashboard.putData("Auto choices", m_chooser);
-    
+
+    timer1.start();
+    timer2.start();
+
     feedwheel.setInverted(true);
     launchwheel.setInverted(true);
 
@@ -104,7 +101,7 @@ double feedpower = 0;
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {System.out.println(timer2.get());}
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -118,11 +115,6 @@ double feedpower = 0;
    */
   @Override
   public void autonomousInit() {
-    timer1.reset();
-    timer2.reset();
-    timer1.start();
-    timer2.start();
-
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -137,12 +129,6 @@ double feedpower = 0;
         if (timer1.get() < 3){
           launchwheel.set(1);
         }
-        break;
-        case kJustDrive:
-         if (timer1.get() < 3){
-         myDrive.tankDrive(0.75, -0.75);
-        }
-
 /* 
         else if (timer1.get() < 5){
           launchwheel.set(1);
@@ -227,11 +213,7 @@ double feedpower = 0;
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-    //doing this in robotInit starts the timer before we even get to business
-  
-    
-}
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
@@ -250,7 +232,7 @@ double feedpower = 0;
 
     //set joystic movement to driving wheels ant then apply scale factor "drivelimit"
     //getX() calls for the x-direction of the joystic
-    myDrive.arcadeDrive(-driver.getX()*drivelimit, -driver.getY()*drivelimit);
+    myDrive.arcadeDrive(driver.getX()*drivelimit, driver.getY()*drivelimit);
     // myDrive.arcadeDrive(-driver.getX()*drivelimit, -driver.getY()*drivelimit); // Original
 
   
